@@ -1,4 +1,4 @@
-package io.transwarp.logparser;
+package io.transwarp.logparser.util;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,8 +10,8 @@ import java.util.List;
  * Author: stk
  * Date: 18/3/31
  */
-public class PatternParser {
-    public static List<String> getPatterns() {
+public class PatternLoader {
+    public static List<String> loadPattern() {
         List<String> result = new ArrayList<>();
         try (InputStreamReader in = new InputStreamReader(Thread.currentThread().getContextClassLoader().getResourceAsStream("pattern"), "UTF-8");
              BufferedReader br = new BufferedReader(in)) {

@@ -1,79 +1,52 @@
 package io.transwarp.logparser;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Author: stk
  * Date: 18/3/27
  */
 public class Parser {
-    private final List<String> patterns = PatternParser.getPatterns();
-    private List<Filter> filters;
-    private List<Filter> subFilters;
-
     public static void main(String[] args) {
+        String folderPath = "C:\\Users\\stk\\Downloads\\logs\\elasticsearch";
+        String logPath = "final.log";
         Parser parser = new Parser();
-        parser.initFilters();
-        parser.parseFolder("C:\\Users\\stk\\Downloads\\logs\\", "C:\\Users\\stk\\Downloads\\logs\\parsed\\");
+        List<Path> logs = parser.parseFolder(folderPath);
     }
 
-    private void initFilters() {
-        filters = new ArrayList<>();
-        filters.add(new ExceptionFilter());
-        subFilters = new ArrayList<>();
-        subFilters.add(new DuplicationFilter());
-    }
-
-    private void parseFolder(String inPath, String outPath) {
-        Pattern pattern = Pattern.compile("^(.*)\\.log");
+    public List<Path> parseFolder(String folderPath) {
         try {
-            Files.walk(Paths.get(inPath), 1).filter(Files::isRegularFile).forEach(i -> {
-                Matcher matcher = pattern.matcher(i.getFileName().toString());
-                if (matcher.find())
-                    parseFile(i.toString(), outPath + matcher.replaceFirst("$1-parsed.log"));
-            });
+            return Files.walk(Paths.get(folderPath), 1)
+                    .filter(path -> path.toString().endsWith(".log"))
+                    .filter(this::isExceptionLog)
+                    .collect(Collectors.toList());
         } catch (IOException e) {
             e.printStackTrace();
         }
+        System.err.println("Cannot resolve path: " + folderPath);
+        return null;
     }
 
-    private void parseFile(String inPath, String outPath) {
-        try (BufferedReader br = new BufferedReader(new FileReader(inPath));
-             BufferedWriter bw = new BufferedWriter(new FileWriter(outPath))) {
-            List<String> record = new ArrayList<>();
+    public void merge(List<Path> paths) {
+
+    }
+
+    private boolean isExceptionLog(Path path) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(path.toString()))) {
             String line;
-            while ((line = br.readLine()) != null) {
-                if (isBegin(line)) {
-                    if (filter(record))
-                        record.forEach(i -> {
-                            try {
-                                bw.write(i + System.getProperty("line.separator"));
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        });
-                    record.clear();
-                }
-                record.add(line);
+            while ((line = reader.readLine()) != null) {
+                if (line.startsWith("\tat ")) return true;
             }
-            bw.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    private boolean isBegin(String line) {
-        return patterns.parallelStream().anyMatch(i -> Pattern.compile(i).matcher(line).find());
-    }
-
-    private boolean filter(List<String> record) {
-        if (filters.parallelStream().noneMatch(i -> i.filter(record))) return false;
-        return subFilters.parallelStream().anyMatch(i -> i.filter(record));
+        return false;
     }
 }
