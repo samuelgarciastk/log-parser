@@ -17,18 +17,21 @@ import java.util.regex.Pattern;
  * Date: 2018/4/2
  */
 public class FileParser {
-    private static final List<String> patterns = PatternLoader.loadPattern();
+    private static final List<String> patterns = Loader.loadList("pattern");
     private List<Filter> filters;
 
     public List<Record> parseFile(Path path) {
+        initFilters();
         System.out.println("Parsing file: " + path);
         List<Record> records = new ArrayList<>();
-        try (BufferedReader br = new BufferedReader(new FileReader(path.toString()))) {
-            List<String> lines = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(path.toString()))) {
             String line;
-            while ((line = br.readLine()) != null) {
+            while ((line = reader.readLine()) != null) if (isBegin(line)) break; // Begin from first record.
+            List<String> lines = new ArrayList<>();
+            lines.add(line);
+
+            while ((line = reader.readLine()) != null) {
                 if (isBegin(line)) {
-                    lines.add(line);
                     Record record = new Record(lines);
                     if (filter(record)) records.add(record);
                     lines.clear();
@@ -41,21 +44,17 @@ public class FileParser {
         return records;
     }
 
-    public void initFilters() {
+    private void initFilters() {
         filters = new ArrayList<>();
         filters.add(new ExceptionFilter());
         filters.add(new DuplicationFilter());
     }
 
-    public void clean() {
-        filters.forEach(Filter::clean);
-    }
-
     private boolean isBegin(String line) {
-        return patterns.parallelStream().anyMatch(i -> Pattern.compile(i).matcher(line).find());
+        return patterns.parallelStream().anyMatch(s -> Pattern.compile(s).matcher(line).find());
     }
 
     private boolean filter(Record record) {
-        return filters.stream().dropWhile(i -> i.filter(record)).count() == 0;
+        return filters.stream().dropWhile(filter -> filter.filter(record)).count() == 0;
     }
 }

@@ -14,9 +14,4 @@ public interface Filter {
      * @return if the record needs to be save into file, then return true.
      */
     boolean filter(Record record);
-
-    /**
-     * Clean status.
-     */
-    void clean();
 }

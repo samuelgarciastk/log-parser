@@ -39,11 +39,7 @@ public class Parser {
 
     public List<Record> merge(List<Path> paths) {
         FileParser fileParser = new FileParser();
-        fileParser.initFilters();
-        return paths.stream().map(path -> {
-            fileParser.clean();
-            return fileParser.parseFile(path);
-        }).reduce(this::mergeRecords).get();
+        return paths.stream().map(fileParser::parseFile).reduce(this::mergeRecords).orElseThrow(NullPointerException::new);
     }
 
     private List<Record> mergeRecords(List<Record> record1, List<Record> record2) {

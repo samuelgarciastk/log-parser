@@ -6,11 +6,11 @@ import java.util.Optional;
 
 /**
  * Author: stk
- * Date: 2018/4/2
+ * Date: 18/4/2
  */
-public class ExceptionFilter implements Filter {
+public class LevelFilter implements Filter {
     @Override
     public boolean filter(Record record) {
-        return Optional.of(record).map(Record::isException).orElse(false);
+        return Optional.of(record).map(Record::getLevel).filter(s -> s.equals("WARN") || s.equals("ERROR")).stream().count() == 1;
     }
 }

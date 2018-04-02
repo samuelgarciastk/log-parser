@@ -3,6 +3,7 @@ package io.transwarp.logparser.filter;
 import io.transwarp.logparser.util.Record;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -14,12 +15,6 @@ public class DuplicationFilter implements Filter {
 
     @Override
     public boolean filter(Record record) {
-        if (record.getDuplicationIdentifier() == null) return false;
-        return existed.add(record.getDuplicationIdentifier());
-    }
-
-    @Override
-    public void clean() {
-        existed.clear();
+        return Optional.of(record).map(Record::getDuplicationIdentifier).map(s -> existed.add(s)).orElse(false);
     }
 }

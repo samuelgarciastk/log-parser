@@ -10,10 +10,10 @@ import java.util.List;
  * Author: stk
  * Date: 18/3/31
  */
-public class PatternLoader {
-    public static List<String> loadPattern() {
+public class Loader {
+    public static List<String> loadList(String name) {
         List<String> result = new ArrayList<>();
-        try (InputStreamReader in = new InputStreamReader(Thread.currentThread().getContextClassLoader().getResourceAsStream("pattern"), "UTF-8");
+        try (InputStreamReader in = new InputStreamReader(Thread.currentThread().getContextClassLoader().getResourceAsStream(name), "UTF-8");
              BufferedReader br = new BufferedReader(in)) {
             String line;
             while ((line = br.readLine()) != null) result.add(line);
