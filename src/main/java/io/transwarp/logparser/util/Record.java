@@ -12,8 +12,8 @@ import java.util.stream.Collectors;
  * Date: 2018/4/2
  */
 public class Record {
-    private static final List<String> patterns = Loader.loadList("pattern");
-    private static final List<String> levels = Loader.loadList("level");
+    private static final List<String> patterns = Loader.loadDatePattern();
+    private static final List<String> levels = Loader.loadToList("level");
     private List<String> content;
     private boolean isException;
     private Date time;

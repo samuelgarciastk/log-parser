@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
  * Date: 2018/4/2
  */
 public class FileParser {
-    private static final List<String> patterns = Loader.loadList("pattern");
+    private static final List<String> patterns = Loader.loadDatePattern();
     private List<Filter> filters;
 
     public List<Record> parseFile(Path path) {
