@@ -1,6 +1,6 @@
 package io.transwarp.logparser.filter;
 
-import java.util.List;
+import io.transwarp.logparser.util.Record;
 
 /**
  * Author: stk
@@ -13,7 +13,7 @@ public interface Filter {
      * @param record one record
      * @return if the record needs to be save into file, then return true.
      */
-    boolean filter(List<String> record);
+    boolean filter(Record record);
 
     /**
      * Clean status.

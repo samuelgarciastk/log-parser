@@ -1,8 +1,9 @@
 package io.transwarp.logparser;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import io.transwarp.logparser.util.FileParser;
+import io.transwarp.logparser.util.Record;
+
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -19,6 +20,8 @@ public class Parser {
         String logPath = "final.log";
         Parser parser = new Parser();
         List<Path> logs = parser.parseFolder(folderPath);
+        List<Record> records = parser.merge(logs);
+        parser.generate(records, logPath);
     }
 
     public List<Path> parseFolder(String folderPath) {
@@ -31,11 +34,20 @@ public class Parser {
             e.printStackTrace();
         }
         System.err.println("Cannot resolve path: " + folderPath);
-        return null;
+        throw new IllegalArgumentException();
     }
 
-    public void merge(List<Path> paths) {
+    public List<Record> merge(List<Path> paths) {
+        FileParser fileParser = new FileParser();
+        fileParser.initFilters();
+        return paths.stream().map(path -> {
+            fileParser.clean();
+            return fileParser.parseFile(path);
+        }).reduce(this::mergeRecords).get();
+    }
 
+    private List<Record> mergeRecords(List<Record> record1, List<Record> record2) {
+        return null;
     }
 
     private boolean isExceptionLog(Path path) {
@@ -48,5 +60,20 @@ public class Parser {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public void generate(List<Record> records, String path) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(path))) {
+            records.forEach(record -> record.getContent().forEach(s -> {
+                try {
+                    writer.write(s + "\n");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }));
+            writer.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

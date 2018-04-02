@@ -1,7 +1,8 @@
 package io.transwarp.logparser.filter;
 
+import io.transwarp.logparser.util.Record;
+
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -12,17 +13,9 @@ public class DuplicationFilter implements Filter {
     private Set<String> existed = new HashSet<>();
 
     @Override
-    public boolean filter(List<String> record) {
-        String keyLine = null;
-        for (String s : record) {
-            if (s.startsWith("\tat ")) {
-                keyLine += s;
-                break;
-            }
-            keyLine = s;
-        }
-        if (keyLine == null) throw new NullPointerException();
-        return existed.add(keyLine);
+    public boolean filter(Record record) {
+        if (record.getDuplicationIdentifier() == null) return false;
+        return existed.add(record.getDuplicationIdentifier());
     }
 
     @Override
