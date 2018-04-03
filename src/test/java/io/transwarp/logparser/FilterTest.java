@@ -3,6 +3,7 @@ package io.transwarp.logparser;
 import io.transwarp.logparser.filter.DuplicationFilter;
 import io.transwarp.logparser.filter.Filter;
 import io.transwarp.logparser.filter.LevelFilter;
+import io.transwarp.logparser.filter.TimeFilter;
 import io.transwarp.logparser.util.Record;
 import org.junit.Before;
 import org.junit.Test;
@@ -48,5 +49,11 @@ public class FilterTest {
         Filter filter = new LevelFilter();
         assert filter.filter(new Record(testData1));
         assert !filter.filter(new Record(testData4));
+    }
+
+    @Test
+    public void timeFilter() {
+        Filter filter = new TimeFilter("20180101 00:00:00,000", "20180301 00:00:00,000");
+        assert filter.filter(new Record(testData1));
     }
 }

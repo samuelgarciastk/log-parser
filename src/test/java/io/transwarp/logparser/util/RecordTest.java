@@ -3,6 +3,9 @@ package io.transwarp.logparser.util;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -27,5 +30,16 @@ public class RecordTest {
         assert record.isException();
         assert record.getLevel().equals("WARN");
         System.out.println(record.getDuplicationIdentifier());
+    }
+
+    @Test
+    public void setTime() {
+        Record record = new Record(testData);
+        try {
+            Date date = new SimpleDateFormat("yyyyMMdd HH:mm:ss,SSS").parse("20180222 20:34:41,062");
+            assert record.getTime().compareTo(date) == 0;
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -49,7 +49,7 @@ public class Loader {
         return date.stream().map(Loader::convertDateToRegex).collect(Collectors.toList());
     }
 
-    private static String convertDateToRegex(String format) {
+    public static String convertDateToRegex(String format) {
         return "^" + format.replace("yyyy", "\\d{4}")
                 .replace("MM", "\\d{2}")
                 .replace("dd", "\\d{2}")

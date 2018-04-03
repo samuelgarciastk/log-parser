@@ -1,8 +1,6 @@
 package io.transwarp.logparser.util;
 
-import io.transwarp.logparser.filter.DuplicationFilter;
-import io.transwarp.logparser.filter.ExceptionFilter;
-import io.transwarp.logparser.filter.Filter;
+import io.transwarp.logparser.filter.*;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -46,8 +44,10 @@ public class FileParser {
 
     private void initFilters() {
         filters = new ArrayList<>();
-        filters.add(new ExceptionFilter());
-        filters.add(new DuplicationFilter());
+        filters.add(new TimeFilter("20000101 00:00:00,000", "20500101 00:00:00,000"));
+        filters.add(new LevelFilter());
+//        filters.add(new ExceptionFilter());
+//        filters.add(new DuplicationFilter());
     }
 
     private boolean isBegin(String line) {
