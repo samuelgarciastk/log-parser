@@ -7,7 +7,5 @@ import io.transwarp.logparser.util.Record
   * Date: 2018/4/3
   */
 class ExceptionFilter extends Filter {
-  override def filter(record: Record): Boolean = {
-    true
-  }
+  override def filter(record: Record): Boolean = Some(record).exists(_.isException)
 }
