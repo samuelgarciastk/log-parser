@@ -9,18 +9,19 @@ import org.junit.Test
   * Date: 2018/4/4
   */
 class FilterTest {
-  var data1 = List("[2018-02-22T20:34:41,062][WARN ][r.suppressed             ] path: /es_testdata/doc/, params: {index=es_testdata, type=doc}",
+  val data1 = List("[2018-02-22T20:34:41,062][WARN ][r.suppressed             ] path: /es_testdata/doc/, params: {index=es_testdata, type=doc}",
     "java.lang.NullPointerException: null",
     "\tat java.util.Objects.requireNonNull(Objects.java:203) ~[?:1.8.0_25]",
     "\tat org.elasticsearch.action.index.IndexRequest.source(IndexRequest.java:464) ~[elasticsearch-5.4.3.jar:5.4.3]",
     "\tat org.elasticsearch.rest.action.document.RestIndexAction.prepareRequest(RestIndexAction.java:75) ~[elasticsearch-5.4.3.jar:5.4.3]")
-  var data2 = List("[2018-02-23T20:34:41,062][WARN ][r.suppressed             ] path: /es_testdata/doc/, params: {index=es_testdata, type=doc}",
+  val data2 = List("[2018-02-23T20:34:41,062][WARN ][r.suppressed             ] path: /es_testdata/doc/, params: {index=es_testdata, type=doc}",
     "java.lang.NullPointerException: null",
     "\tat java.util.Objects.requireNonNull(Objects.java:203) ~[?:1.8.0_25]",
     "\tat org.elasticsearch.action.index.IndexRequest.source(IndexRequest.java:464) ~[elasticsearch-5.4.3.jar:5.4.3]",
     "\tat org.elasticsearch.rest.action.document.RestIndexAction.prepareRequest(RestIndexAction.java:75) ~[elasticsearch-5.4.3.jar:5.4.3]")
-  var data3 = List("[2018-02-23T20:34:41,062][WARN ][r.suppressed             ] path: /es_testdata/doc/, params: {index=es_testdata, type=doc}")
-  var data4 = List("[2018-02-23T20:34:41,062][INFO ][r.suppressed             ] path: /es_testdata/doc/, params: {index=es_testdata, type=doc}")
+  val data3 = List("[2018-02-23T20:34:41,062][WARN ][r.suppressed             ] path: /es_testdata/doc/, params: {index=es_testdata, type=doc}")
+  val data4 = List("[2018-02-23T20:34:41,062][INFO ][r.suppressed             ] path: /es_testdata/doc/, params: {index=es_testdata, type=doc}")
+  val data5 = List("2018-03-30 21:31:50,897  INFO io.transwarp.manager.agent.actor.AgentDispatcher:  [agent-alert-future-dispatcher-5958748] (AgentDispatcher.java:248) - Sending AlertReport to akka.tcp://manager@172.16.3.7:2551/user/masterDispatcher/alertGatewayActor")
 
   @Test
   def exceptionFilter(): Unit = {
@@ -31,8 +32,8 @@ class FilterTest {
 
   @Test
   def timeFilter(): Unit = {
-    val filter = new TimeFilter("20180101 00:00:00,000", "20180301 00:00:00,000")
-    assert(filter.filter(new Record(data1)))
+    val filter = new TimeFilter("20000101 00:00:00,000", "20500101 00:00:00,000")
+    assert(filter.filter(new Record(data5)))
   }
 
   @Test
