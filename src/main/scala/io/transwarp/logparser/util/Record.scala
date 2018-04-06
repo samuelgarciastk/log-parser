@@ -15,7 +15,7 @@ class Record(records: List[String]) {
     case _ => records
   }
 
-  val isException: Boolean = content.par.exists(p => p.startsWith("\tat "))
+  val isException: Boolean = content.par.exists(_.startsWith("\tat "))
 
   val time: Option[Date] = Record.patterns.map(s => Converter.convertDateToRegex(s).r.findFirstIn(content.head) match {
     case Some(date) => new SimpleDateFormat(s.replace("T", "'T'")).parse(date)
