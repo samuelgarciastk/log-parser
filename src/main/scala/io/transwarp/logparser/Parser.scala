@@ -12,25 +12,23 @@ import scala.io.Source
   */
 object Parser {
   def main(args: Array[String]): Unit = {
-    val folderPath = "C:\\Users\\stk\\Downloads\\logs\\transwarp-manager"
-    val logPath = "C:\\Users\\stk\\Downloads\\logs\\final.log"
+    val folderPath = "C:\\Users\\stk\\Downloads\\test-data\\logs\\elasticsearch"
+    val logPath = "C:\\Users\\stk\\Downloads\\test-data\\logs\\final.log"
     generate(merge(parseFolder(folderPath)), logPath)
   }
 
-  def parseFolder(path: String): List[File] = new File(path).listFiles.filter(_.isFile).filter(_.getName.endsWith(".log")).filter(isExceptionLog).toList
-
-  private def isExceptionLog(file: File): Boolean = Source.fromFile(file).getLines().exists(_.startsWith("\tat "))
+  def parseFolder(path: String): List[File] = new File(path).listFiles
+    .filter(_.isFile)
+    .filter(_.getName.endsWith(".log"))
+    .filter(Source.fromFile(_).getLines.exists(_.startsWith("\tat "))).toList
 
   def merge(files: List[File]): List[Record] = {
-    val fileParser = new FileParser
     files.par.map(file => {
-      val records = fileParser.parseFile(file)
+      val records = FileParser.parseFile(file)
       println(file.getName + ": " + records.length + " records.")
       records
-    }).reduce(mergeRecords)
+    }).reduce((r1, r2) => (r1 ++ r2).sortBy(_.time))
   }
-
-  private def mergeRecords(record1: List[Record], record2: List[Record]): List[Record] = (record1 ++ record2).sortBy(_.time)
 
   def generate(records: List[Record], path: String): Unit = {
     val writer = new PrintWriter(new File(path))

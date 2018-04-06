@@ -12,7 +12,7 @@ import org.junit.Test
 class FileParserTest {
   @Test
   def parseFile(): Unit = {
-    val fileParser = new FileParser
-    Parser.generate(fileParser.parseFile(new File("C:\\Users\\stk\\Downloads\\logs\\test\\test.log")), "C:\\Users\\stk\\Downloads\\logs\\test-result.log")
+    Parser.generate(FileParser.parseFile(new File("C:\\Users\\stk\\Downloads\\test-data\\logs\\elasticsearch\\elasticsearch-2018-03-19.log")),
+      "C:\\Users\\stk\\Downloads\\test-data\\logs\\test-result.log")
   }
 }
