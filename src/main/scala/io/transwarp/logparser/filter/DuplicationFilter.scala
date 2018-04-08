@@ -12,6 +12,6 @@ class DuplicationFilter extends Filter {
   override def filter(record: Record): Boolean = Some(record).get.duplicationIdentifier match {
     case Some(id) if !existed.contains(id) => existed += id; true
     case Some(id) if existed.contains(id) => false
-    case None => false
+    case None => true
   }
 }

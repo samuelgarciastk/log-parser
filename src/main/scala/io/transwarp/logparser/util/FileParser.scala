@@ -40,4 +40,9 @@ object FileParser {
   }
 
   private def isBeginLine(line: String): Boolean = pattern.map(_.r.findFirstIn(line)).exists(_.isDefined)
+
+  def parseRecord(records: List[Record]): List[Record] = {
+    val filters = List(new DuplicationFilter)
+    records.filter(r => filters.dropWhile(_.filter(r)).isEmpty)
+  }
 }

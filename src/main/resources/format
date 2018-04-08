@@ -1,0 +1,9 @@
+es:
+  timestamp: "[yyyy-MM-ddTHH:mm:ss,SSS]"
+  level: (?<=\[).*?(?=\])
+  logger: (?<=\[).*?(?=\])
+
+manager:
+  timestamp: "yyyy-MM-dd HH:mm:ss,SSS"
+  level: \b\w+?\b
+  logger: \b[.\w]+\b

@@ -15,10 +15,14 @@ class Record(records: List[String]) {
     case _ => records
   }
 
-  val isException: Boolean = content.par.exists(_.startsWith("\tat "))
+  val isException: Boolean = content.exists(_.startsWith("\tat "))
+
+  var timeRange: Int = 0
 
   val time: Option[Date] = Record.patterns.map(s => Converter.convertDateToRegex(s).r.findFirstIn(content.head) match {
-    case Some(date) => new SimpleDateFormat(s.replace("T", "'T'")).parse(date)
+    case Some(date) =>
+      timeRange = s.length
+      new SimpleDateFormat(s.replace("T", "'T'")).parse(date)
     case None => null
   }).find(_ != null).orElse(None)
 
@@ -26,7 +30,7 @@ class Record(records: List[String]) {
 
   val duplicationIdentifier: Option[String] = content.find(_.startsWith("\tat ")) match {
     case Some(key) => val index = content.indexOf(key); Option(content(index - 1) + content(index))
-    case None => None
+    case None => Option(content.head.substring(timeRange))
   }
 }
 

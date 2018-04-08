@@ -12,6 +12,7 @@ class RecordTest {
     "\tat java.util.Objects.requireNonNull(Objects.java:203) ~[?:1.8.0_25]",
     "\tat org.elasticsearch.action.index.IndexRequest.source(IndexRequest.java:464) ~[elasticsearch-5.4.3.jar:5.4.3]",
     "\tat org.elasticsearch.rest.action.document.RestIndexAction.prepareRequest(RestIndexAction.java:75) ~[elasticsearch-5.4.3.jar:5.4.3]")
+  val list2 = List("[2018-03-05T11:23:47,558][WARN ][o.e.n.Node               ] version [5.4.1-SNAPSHOT] is a pre-release version of Elasticsearch and is not suitable for production")
 
   @Test
   def record(): Unit = {
@@ -20,5 +21,7 @@ class RecordTest {
     println(record.level)
     println(record.duplicationIdentifier)
     println(record.time)
+    val record2 = new Record(list2)
+    println(record2.duplicationIdentifier)
   }
 }
