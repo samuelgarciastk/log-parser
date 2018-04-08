@@ -15,4 +15,6 @@ object Converter {
       .replace("SSS", "\\d{3}")
       .replace("[", "\\[")
       .replace("]", "\\]")
+
+  def dateEscape(date: String): String = "(?:(?![aDdEFGHhKkMmSsWwyZz])[a-zA-Z])+".r.replaceAllIn(date, "'$0'")
 }
