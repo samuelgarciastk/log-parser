@@ -62,4 +62,10 @@ class LogEntity(records: List[String], logFormat: LogFormat) {
     case Some(id) => val index = content.indexOf(id); Option(content(index - 1) + content(index))
     case None => config("message").asInstanceOf[Option[String]]
   }
+
+  var fileName: String = _
+
+  def setFileName(name: String): Unit = {
+    fileName = name
+  }
 }

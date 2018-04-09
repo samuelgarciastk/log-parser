@@ -21,10 +21,11 @@ object Parser {
 
   def main(args: Array[String]): Unit = {
     val zipPath = "C:\\Users\\stk\\Downloads\\test-data\\logs\\logs.zip"
-//    val directory = "C:\\Users\\stk\\Downloads\\test-data\\logs\\elasticsearch"
+    val directory = "C:\\Users\\stk\\Downloads\\test-data\\logs\\elasticsearch"
     val logPath = "C:\\Users\\stk\\Downloads\\test-data\\logs\\final.log"
-    unzip(zipPath, tempDirectory)
-    val logEntities = mergeFilter(merge(getAllFiles(tempDirectory.toFile).toList))
+    //    unzip(zipPath, tempDirectory)
+    //    val logEntities = mergeFilter(merge(getAllFiles(tempDirectory.toFile).toList))
+    val logEntities = mergeFilter(merge(getAllFiles(new File(directory)).toList))
     generate(logEntities, logPath)
   }
 
@@ -80,6 +81,7 @@ object Parser {
       lines = lines :+ line
     }
     filter(lines)
+    logEntities.foreach(_.setFileName(file.toString))
     logEntities
   }
 
@@ -90,10 +92,26 @@ object Parser {
 
   def generate(logEntities: List[LogEntity], path: String): Unit = {
     val writer = new PrintWriter(new File(path))
-    logEntities.foreach(_.content.foreach(s => writer.write(s + "\n")))
+    logEntities.foreach(l => {
+      val length = l.fileName.length
+      var delimiter = ""
+      for (_ <- 0 to length) yield delimiter += "="
+      writer.write(delimiter + "\n")
+      writer.write(l.fileName + ": \n")
+      l.content.foreach(s => writer.write(s + "\n"))
+    })
     writer.flush()
     println("Write " + logEntities.length + " records.")
     writer.close()
+  }
+
+  def getResult(logEntities: List[LogEntity]): List[String] = {
+    var result: List[String] = List()
+    logEntities.foreach(l => {
+      result = result :+ l.fileName + ": "
+      l.content.foreach(s => result = result :+ s)
+    })
+    result
   }
 
   private def setMergeFilters(): List[Filter] = List(
