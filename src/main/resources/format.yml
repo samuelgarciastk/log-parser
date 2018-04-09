@@ -1,9 +1,9 @@
 es:
   timestamp: "[yyyy-MM-ddTHH:mm:ss,SSS]"
-  level: (?<=\[).*?(?=\])
-  logger: (?<=\[).*?(?=\])
+  level: \[\s*(DEBUG|TRACE|INFO|WARN|WARNING|ERROR|FATAL)\s*\]
+  logger: \[([.\w\s]+?)\]
 
 manager:
   timestamp: "yyyy-MM-dd HH:mm:ss,SSS"
+  level: \b(DEBUG|TRACE|INFO|WARN|WARNING|ERROR|FATAL)\b
   logger: \b[.\w]+\b
-  level: \b\w+?\b

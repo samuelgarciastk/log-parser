@@ -6,10 +6,9 @@ import org.junit.Test
   * Author: stk
   * Date: 2018/4/8
   */
-class ConfigLoaderTest {
+class FormatLoaderTest {
   @Test
   def loadFormat(): Unit = {
-    val map = ConfigLoader.loadFormat()
-    println(map)
+    println(FormatLoader.logFormats)
   }
 }

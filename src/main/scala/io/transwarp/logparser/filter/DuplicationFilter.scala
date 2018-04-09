@@ -1,6 +1,6 @@
 package io.transwarp.logparser.filter
 
-import io.transwarp.logparser.util.Record
+import io.transwarp.logparser.util.LogEntity
 
 /**
   * Author: stk
@@ -9,7 +9,7 @@ import io.transwarp.logparser.util.Record
 class DuplicationFilter extends Filter {
   private var existed: Set[String] = Set()
 
-  override def filter(record: Record): Boolean = Some(record).get.duplicationIdentifier match {
+  override def filter(logEntity: LogEntity): Boolean = Some(logEntity).get.duplicationIdentifier match {
     case Some(id) if !existed.contains(id) => existed += id; true
     case Some(id) if existed.contains(id) => false
     case None => true
