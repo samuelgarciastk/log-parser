@@ -44,6 +44,6 @@ object FileParser {
   }
 
   def identifyFormat(head: String): LogFormat = FormatLoader.logFormats
-    .map(f => (f._2, new LogEntry(List(head), f._2).config.count(_._2.isDefined))).toList
+    .map(f => (f._2, new LogEntry(List(head), f._2).format.count(_._2.isDefined))).toList
     .sortBy(_._2)(Ordering[Int].reverse).head._1
 }

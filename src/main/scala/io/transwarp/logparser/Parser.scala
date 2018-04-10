@@ -32,7 +32,7 @@ object Parser {
       val logEntries = FileParser.parseFile(file, setFileFilters())
       System.err.println(file.getName + ": " + logEntries.length + " records.")
       logEntries
-    }).reduce((r1, r2) => (r1 ++ r2).sortBy(_.config("timestamp").asInstanceOf[Option[Date]]))
+    }).reduce((r1, r2) => (r1 ++ r2).sortBy(_.format("timestamp").asInstanceOf[Option[Date]]))
   }
 
   private def setFileFilters(): List[Filter] = List(
@@ -57,14 +57,14 @@ object Parser {
     val head = iterator.next
     entities = entities :+ head
 
-    var lastTime: Long = head.config("timestamp").asInstanceOf[Option[Date]] match {
+    var lastTime: Long = head.format("timestamp").asInstanceOf[Option[Date]] match {
       case Some(time) => time.getTime
       case None => 0
     }
 
     do {
       val logEntity = iterator.next
-      logEntity.config("timestamp").asInstanceOf[Option[Date]].foreach(time => {
+      logEntity.format("timestamp").asInstanceOf[Option[Date]].foreach(time => {
         if (time.getTime - lastTime > Constant.CASE_INTERVAL) {
           logCases = logCases :+ new LogCase(entities)
           entities = List()

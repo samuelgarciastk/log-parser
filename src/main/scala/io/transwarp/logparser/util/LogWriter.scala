@@ -11,7 +11,7 @@ object LogWriter {
     val writer = new PrintWriter(new File(path))
     logEntries.foreach(l => {
       val delimiter = getDelimiter(l.fileName.length)
-      writer.write(delimiter + "\n" + l.fileName + ": \n")
+      writer.write(delimiter + "\n" + l.fileName + ":\n")
       l.content.foreach(s => writer.write(s + "\n"))
     })
     writer.flush()
@@ -23,15 +23,21 @@ object LogWriter {
     val writer = new PrintWriter(new File(path))
     var index = 0
     logCases.foreach(c => {
-      index += 1
-      val lint = s"|| Log Case: $index ||"
-      val delimiter = getDelimiter(lint.length)
-      writer.write(s"$delimiter\n$lint\n$delimiter\n")
-      c.content.foreach(_.content.foreach(s => writer.write(s + "\n")))
+      if (c.exception.isDefined) {
+        index += 1
+        val lint = s"|| Log Case: $index ||"
+        val delimiter = getDelimiter(lint.length)
+        writer.write(s"$delimiter\n$lint\n$delimiter\n")
+        writer.write(c.exception.get + "\n")
+        /*c.content.foreach(l => {
+          writer.write(l.fileName + ":\n")
+          l.content.foreach(s => writer.write(s + "\n"))
+        })*/
+      }
     })
     writer.flush()
     writer.close()
-    println("Write " + logCases.length + " cases.")
+    println("Write " + index + " cases.")
   }
 
   private def getDelimiter(length: Int): String = {

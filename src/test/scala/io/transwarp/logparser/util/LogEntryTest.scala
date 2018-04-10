@@ -19,7 +19,7 @@ class LogEntryTest {
   @Test
   def logEntry(): Unit = {
     val logEntry = new LogEntry(list2, FormatLoader.logFormats("es"))
-    println(logEntry.config)
+    println(logEntry.format)
     println(logEntry.duplicationIdentifier)
   }
 }

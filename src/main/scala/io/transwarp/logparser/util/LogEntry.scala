@@ -15,7 +15,7 @@ class LogEntry(records: List[String], logFormat: LogFormat) {
     case _ => records
   }
 
-  val config: Map[String, Option[Any]] = {
+  val format: Map[String, Option[Any]] = {
     var head = content.head
     var map: Map[String, Option[Any]] = Map()
     logFormat.config.foreach(c => c._1 match {
@@ -59,8 +59,8 @@ class LogEntry(records: List[String], logFormat: LogFormat) {
   val isException: Boolean = content.exists(_.startsWith("\tat "))
 
   val duplicationIdentifier: Option[String] = content.find(_.startsWith("\tat ")) match {
-    case Some(id) => val index = content.indexOf(id); Option(content(index - 1) + content(index))
-    case None => config("message").asInstanceOf[Option[String]]
+    case Some(id) => val index = content.indexOf(id); Option(content(index - 1) + "\n" + content(index))
+    case None => format("message").asInstanceOf[Option[String]]
   }
 
   var fileName: String = _

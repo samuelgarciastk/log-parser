@@ -10,5 +10,11 @@ class LogCase(logEntries: List[LogEntry]) {
     case _ => logEntries
   }
 
-  //  val attributes
+  val component: String = ""
+
+  val exception: Option[String] = content.filter(_.isException).filter(_.duplicationIdentifier.isDefined)
+    .map(e => e.fileName + ":\n" + e.content.head + "\n" + e.duplicationIdentifier.get + "\n").mkString("\n") match {
+    case "" => None
+    case s => Option(s)
+  }
 }
