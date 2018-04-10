@@ -7,7 +7,7 @@ import org.junit.Test
   * Author: stk
   * Date: 18/4/8
   */
-class LogEntityTest {
+class LogEntryTest {
   val list1 = List("[2018-02-22T20:34:41,062][WARN ][r.suppressed             ] path: /es_testdata/doc/, params: {index=es_testdata, type=doc}",
     "java.lang.NullPointerException: null",
     "\tat java.util.Objects.requireNonNull(Objects.java:203) ~[?:1.8.0_25]",
@@ -18,7 +18,7 @@ class LogEntityTest {
 
   @Test
   def logEntry(): Unit = {
-    val logEntry = new LogEntity(list2, FormatLoader.logFormats("es"))
+    val logEntry = new LogEntry(list2, FormatLoader.logFormats("es"))
     println(logEntry.config)
     println(logEntry.duplicationIdentifier)
   }

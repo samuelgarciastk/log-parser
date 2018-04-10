@@ -9,9 +9,9 @@ import io.transwarp.logparser.conf.LogFormat
   * Author: stk
   * Date: 18/4/8
   */
-class LogEntity(records: List[String], logFormat: LogFormat) {
+class LogEntry(records: List[String], logFormat: LogFormat) {
   val content: List[String] = records match {
-    case null | Nil => throw new IllegalArgumentException("Invalid record.")
+    case null | Nil => throw new IllegalArgumentException("Invalid records.")
     case _ => records
   }
 
@@ -64,8 +64,4 @@ class LogEntity(records: List[String], logFormat: LogFormat) {
   }
 
   var fileName: String = _
-
-  def setFileName(name: String): Unit = {
-    fileName = name
-  }
 }

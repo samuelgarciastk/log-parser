@@ -2,7 +2,7 @@ package io.transwarp.logparser
 
 import io.transwarp.logparser.conf.FormatLoader
 import io.transwarp.logparser.filter.{DuplicationFilter, ExceptionFilter, LevelFilter, TimeFilter}
-import io.transwarp.logparser.util.LogEntity
+import io.transwarp.logparser.util.LogEntry
 import org.junit.Test
 
 /**
@@ -27,28 +27,28 @@ class FilterTest {
   @Test
   def exceptionFilter(): Unit = {
     val filter = new ExceptionFilter
-    assert(filter.filter(new LogEntity(data1, FormatLoader.logFormats("es"))))
-    assert(!filter.filter(new LogEntity(data3, FormatLoader.logFormats("es"))))
+    assert(filter.filter(new LogEntry(data1, FormatLoader.logFormats("es"))))
+    assert(!filter.filter(new LogEntry(data3, FormatLoader.logFormats("es"))))
   }
 
   @Test
   def timeFilter(): Unit = {
     val filter = new TimeFilter("20000101 00:00:00,000", "20500101 00:00:00,000")
-    assert(filter.filter(new LogEntity(data5, FormatLoader.logFormats("manager"))))
+    assert(filter.filter(new LogEntry(data5, FormatLoader.logFormats("manager"))))
   }
 
   @Test
   def levelFilter(): Unit = {
     val filter = new LevelFilter(List("WARN", "ERROR"))
-    assert(filter.filter(new LogEntity(data1, FormatLoader.logFormats("es"))))
-    assert(!filter.filter(new LogEntity(data4, FormatLoader.logFormats("es"))))
+    assert(filter.filter(new LogEntry(data1, FormatLoader.logFormats("es"))))
+    assert(!filter.filter(new LogEntry(data4, FormatLoader.logFormats("es"))))
   }
 
   @Test
   def duplicationFilter(): Unit = {
     val filter = new DuplicationFilter
-    assert(filter.filter(new LogEntity(data1, FormatLoader.logFormats("es"))))
-    assert(!filter.filter(new LogEntity(data2, FormatLoader.logFormats("es"))))
-    assert(filter.filter(new LogEntity(data3, FormatLoader.logFormats("es"))))
+    assert(filter.filter(new LogEntry(data1, FormatLoader.logFormats("es"))))
+    assert(!filter.filter(new LogEntry(data2, FormatLoader.logFormats("es"))))
+    assert(filter.filter(new LogEntry(data3, FormatLoader.logFormats("es"))))
   }
 }
