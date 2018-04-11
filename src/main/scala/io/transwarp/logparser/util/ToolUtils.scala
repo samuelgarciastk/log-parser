@@ -1,6 +1,6 @@
 package io.transwarp.logparser.util
 
-import java.io.{File, FileInputStream, FileOutputStream}
+import java.io._
 import java.nio.file.Path
 import java.util.zip.ZipInputStream
 

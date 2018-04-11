@@ -5,7 +5,7 @@ import java.nio.file.{Files, Path}
 import java.util.Date
 
 import io.transwarp.logparser.conf.Constant
-import io.transwarp.logparser.filter.{Filter, LevelFilter, TimeFilter}
+import io.transwarp.logparser.filter.{DuplicationFilter, Filter, LevelFilter, TimeFilter}
 import io.transwarp.logparser.util.{LogCase, LogEntry, LogWriter, ToolUtils}
 
 /**
@@ -22,12 +22,13 @@ object Parser {
     val logPath = "C:\\Users\\stk\\Downloads\\test-data\\logs\\final.log"
     //    ToolUtils.unzip(zipPath, tempDirectory)
     val files = ToolUtils.getAllFiles(new File(directory)).toList
-    val logEntries = mergeFilter(merge(files))
+    val logEntries = merge(files)
     val logCases = getLogCases(logEntries)
     LogWriter.writeLogCases(logCases, logPath)
   }
 
   def merge(files: List[File]): List[LogEntry] = {
+    //TODO
     files.map(file => {
       val logEntries = FileParser.parseFile(file, setFileFilters())
       System.err.println(file.getName + ": " + logEntries.length + " records.")
@@ -38,15 +39,6 @@ object Parser {
   private def setFileFilters(): List[Filter] = List(
     new TimeFilter("20000101 00:00:00,000", "20500101 00:00:00,000"),
     new LevelFilter(List("WARN", "ERROR"))
-  )
-
-  def mergeFilter(logEntities: List[LogEntry]): List[LogEntry] = {
-    val filters = setMergeFilters()
-    logEntities.filter(l => filters.dropWhile(_.filter(l)).isEmpty)
-  }
-
-  private def setMergeFilters(): List[Filter] = List(
-    //    new DuplicationFilter
   )
 
   def getLogCases(logEntities: List[LogEntry]): List[LogCase] = {
@@ -75,4 +67,13 @@ object Parser {
     } while (iterator.hasNext)
     logCases
   }
+
+  def mergeFilter(logEntities: List[LogEntry]): List[LogEntry] = {
+    val filters = setMergeFilters()
+    logEntities.filter(l => filters.dropWhile(_.filter(l)).isEmpty)
+  }
+
+  private def setMergeFilters(): List[Filter] = List(
+    new DuplicationFilter
+  )
 }

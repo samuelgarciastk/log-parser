@@ -3,6 +3,8 @@ package io.transwarp.logparser.util
 /**
   * Author: stk
   * Date: 2018/4/10
+  *
+  * One log case is a list of log entries whose timestamps are in a specific time range.
   */
 class LogCase(logEntries: List[LogEntry]) {
   val content: List[LogEntry] = logEntries match {

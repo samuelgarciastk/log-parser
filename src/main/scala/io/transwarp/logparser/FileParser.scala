@@ -1,6 +1,6 @@
 package io.transwarp.logparser
 
-import java.io.File
+import java.io.{BufferedReader, File, FileReader}
 
 import io.transwarp.logparser.conf.{FormatLoader, LogFormat}
 import io.transwarp.logparser.filter.Filter
@@ -17,12 +17,15 @@ object FileParser {
     println("Parsing file: " + file)
 
     var logEntries: List[LogEntry] = List()
-    val fileLines = Source.fromFile(file).getLines.toList
-    val logFormat = identifyFormat(fileLines.head)
-    var lines: List[String] = List()
+    val reader = new BufferedReader(new FileReader(file))
+    var line = reader.readLine
+    if (line == null) return List()
+    val logFormat = identifyFormat(line)
+    var lines: List[String] = List(line)
 
     val filter = (lines: List[String]) => if (lines.nonEmpty) {
       val logEntity = new LogEntry(lines, logFormat)
+      logEntity.fileName = file.toString
       if (filters.dropWhile(_.filter(logEntity)).isEmpty) logEntries = logEntries :+ logEntity
     }
 
@@ -31,15 +34,21 @@ object FileParser {
       case head => ("^" + head._2).r.findFirstIn(line).isDefined
     }
 
-    for (line <- fileLines) {
+    while ({line = reader.readLine; line != null}) {
       if (isBeginLine(line)) {
         filter(lines)
         lines = List()
       }
       lines = lines :+ line
     }
+//    for (line <- fileLines) {
+//      if (isBeginLine(line)) {
+//        filter(lines)
+//        lines = List()
+//      }
+//      lines = lines :+ line
+//    }
     filter(lines)
-    logEntries.foreach(_.fileName = file.toString)
     logEntries
   }
 
