@@ -40,7 +40,7 @@ class LogEntry(records: List[String], logFormat: LogFormat) {
         }
         map += (c._1 -> value)
     })
-    map += ("message" -> Option(head.trim))
+    map += ("message" -> Option(head.replaceFirst("[^\\w]*", "").trim))
     map
   }
 
