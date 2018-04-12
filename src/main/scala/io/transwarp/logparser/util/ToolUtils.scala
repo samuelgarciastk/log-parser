@@ -27,8 +27,20 @@ object ToolUtils {
 
   def getAllFiles(file: File): Array[File] = {
     val files = file.listFiles
-    files.filter(_.isFile).filter(_.getName.endsWith(".log"))
-      .filter(Source.fromFile(_).getLines.exists(_.startsWith("\tat "))) ++
-      files.filter(_.isDirectory).flatMap(getAllFiles)
+    files.filter(_.isFile) ++ files.filter(_.isDirectory).flatMap(getAllFiles)
+  }
+
+  def fileToString(path: String): String = {
+    val file = Source.fromInputStream(this.getClass.getClassLoader.getResourceAsStream(path))
+    val result = file.getLines.mkString("\n")
+    file.close()
+    result
+  }
+
+  def calculateTime[A](function: => A): (A, Double) = {
+    val start = System.nanoTime
+    val result = function
+    val end = System.nanoTime
+    (result, (end - start) / 1000000000d)
   }
 }

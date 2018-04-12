@@ -1,45 +1,33 @@
 package io.transwarp.logparser
 
 import java.io._
-import java.nio.file.{Files, Path}
 import java.util.Date
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.scala.DefaultScalaModule
+import com.fasterxml.jackson.module.scala.experimental.ScalaObjectMapper
 import io.transwarp.logparser.conf.Constant
-import io.transwarp.logparser.filter.{DuplicationFilter, Filter, LevelFilter, TimeFilter}
-import io.transwarp.logparser.util.{LogCase, LogEntry, LogWriter, ToolUtils}
+import io.transwarp.logparser.filter.Filter
+import io.transwarp.logparser.util.{LogCase, LogEntry, ToolUtils}
+
+import scala.collection.mutable
 
 /**
   * Author: stk
   * Date: 2018/4/3
   */
 object Parser {
-  private val tempDirectory: Path = Files.createTempDirectory("LP-")
-  tempDirectory.toFile.deleteOnExit()
+  var fileFilters: List[Filter] = getFilters(ToolUtils.fileToString("conf.json"))
+  var mergeFilters: List[Filter] = Nil
 
-  def main(args: Array[String]): Unit = {
-    //    val zipPath = "C:\\Users\\stk\\Downloads\\test-data\\logs\\logs.zip"
-    val directory = "C:\\Users\\stk\\Downloads\\test-data\\logs\\elasticsearch"
-    val logPath = "C:\\Users\\stk\\Downloads\\test-data\\logs\\final.log"
-    //    ToolUtils.unzip(zipPath, tempDirectory)
-    val files = ToolUtils.getAllFiles(new File(directory)).toList
-    val logEntries = merge(files)
-    val logCases = getLogCases(logEntries)
-    LogWriter.writeLogCases(logCases, logPath)
+  def merge(files: List[File]): List[LogEntry] = files.par.map(file => FileParser.parseFile(file, cloneFilters(fileFilters)))
+    .reduce((r1, r2) => (r1 ++ r2).sortBy(_.format("timestamp").asInstanceOf[Option[Date]]))
+
+  def cloneFilters(filters: List[Filter]): List[Filter] = {
+    var newFilters: List[Filter] = List()
+    filters.foreach(f => newFilters = newFilters :+ f.copy)
+    newFilters
   }
-
-  def merge(files: List[File]): List[LogEntry] = {
-    //TODO
-    files.map(file => {
-      val logEntries = FileParser.parseFile(file, setFileFilters())
-      System.err.println(file.getName + ": " + logEntries.length + " records.")
-      logEntries
-    }).reduce((r1, r2) => (r1 ++ r2).sortBy(_.format("timestamp").asInstanceOf[Option[Date]]))
-  }
-
-  private def setFileFilters(): List[Filter] = List(
-    new TimeFilter("20000101 00:00:00,000", "20500101 00:00:00,000"),
-    new LevelFilter(List("WARN", "ERROR"))
-  )
 
   def getLogCases(logEntities: List[LogEntry]): List[LogCase] = {
     if (logEntities.isEmpty) return null
@@ -68,12 +56,19 @@ object Parser {
     logCases
   }
 
-  def mergeFilter(logEntities: List[LogEntry]): List[LogEntry] = {
-    val filters = setMergeFilters()
-    logEntities.filter(l => filters.dropWhile(_.filter(l)).isEmpty)
-  }
+  def mergeFilter(logEntities: List[LogEntry]): List[LogEntry] = logEntities.filter(l => mergeFilters.dropWhile(_.filter(l)).isEmpty)
 
-  private def setMergeFilters(): List[Filter] = List(
-    new DuplicationFilter
-  )
+  private def getFilters(json: String): List[Filter] = {
+    val mapper = new ObjectMapper with ScalaObjectMapper
+    mapper.registerModule(DefaultScalaModule)
+    val config = mapper.readValue[mutable.LinkedHashMap[String, List[String]]](json)
+    var filters: List[Filter] = List()
+    config.foreach(e => filters = filters :+
+      Class.forName("io.transwarp.logparser.filter." + e._1)
+        .getConstructor(classOf[List[String]]).newInstance(e._2 match {
+        case Nil => null
+        case param => param
+      }).asInstanceOf[Filter])
+    filters
+  }
 }

@@ -27,26 +27,14 @@ class LogEntry(records: List[String], logFormat: LogFormat) {
           case None => None
         }
         map += (c._1 -> value)
-      case "level" =>
+      case _ =>
         val value: Option[String] = c._2.r.findFirstIn(head) match {
-          case Some(level) =>
-            head = head.replaceAllLiterally(level, "")
+          case Some(field) =>
+            head = head.replaceAllLiterally(field, "")
             Option(try {
-              c._2.r.replaceFirstIn(level, "$1").trim
+              c._2.r.replaceFirstIn(field, "$1").trim
             } catch {
-              case _: Throwable => c._2.r.replaceFirstIn(level, "$0").trim
-            })
-          case None => None
-        }
-        map += (c._1 -> value)
-      case "logger" =>
-        val value: Option[String] = c._2.r.findFirstIn(head) match {
-          case Some(logger) =>
-            head = head.replaceAllLiterally(logger, "")
-            Option(try {
-              c._2.r.replaceFirstIn(logger, "$1").trim
-            } catch {
-              case _: Throwable => c._2.r.replaceFirstIn(logger, "$0").trim
+              case _: Throwable => c._2.r.replaceFirstIn(field, "$0").trim
             })
           case None => None
         }
@@ -58,10 +46,12 @@ class LogEntry(records: List[String], logFormat: LogFormat) {
 
   val isException: Boolean = content.exists(_.startsWith("\tat "))
 
-  val duplicationIdentifier: Option[String] = content.find(_.startsWith("\tat ")) match {
+  /*val duplicationIdentifier: Option[String] = content.find(_.startsWith("\tat ")) match {
     case Some(id) => val index = content.indexOf(id); Option(content(index - 1) + "\n" + content(index))
     case None => format("message").asInstanceOf[Option[String]]
-  }
+  }*/
+
+  val duplicationIdentifier: Option[String] = None
 
   var fileName: String = _
 }

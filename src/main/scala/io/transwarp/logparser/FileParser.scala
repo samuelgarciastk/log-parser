@@ -1,6 +1,6 @@
 package io.transwarp.logparser
 
-import java.io.{BufferedReader, File, FileReader}
+import java.io.File
 
 import io.transwarp.logparser.conf.{FormatLoader, LogFormat}
 import io.transwarp.logparser.filter.Filter
@@ -11,15 +11,17 @@ import scala.io.Source
 /**
   * Author: stk
   * Date: 2018/4/10
+  *
+  * Parse a single log file.
   */
 object FileParser {
   def parseFile(file: File, filters: List[Filter]): List[LogEntry] = {
     println("Parsing file: " + file)
-
     var logEntries: List[LogEntry] = List()
-    val reader = new BufferedReader(new FileReader(file))
-    var line = reader.readLine
-    if (line == null) return List()
+    val reader = Source.fromFile(file)
+    val fileLines = reader.getLines
+    var line = ""
+    if (fileLines.hasNext) line = fileLines.next else return List()
     val logFormat = identifyFormat(line)
     var lines: List[String] = List(line)
 
@@ -34,25 +36,23 @@ object FileParser {
       case head => ("^" + head._2).r.findFirstIn(line).isDefined
     }
 
-    while ({line = reader.readLine; line != null}) {
+    while (fileLines.hasNext) {
+      line = fileLines.next
       if (isBeginLine(line)) {
         filter(lines)
         lines = List()
       }
       lines = lines :+ line
     }
-//    for (line <- fileLines) {
-//      if (isBeginLine(line)) {
-//        filter(lines)
-//        lines = List()
-//      }
-//      lines = lines :+ line
-//    }
     filter(lines)
+    reader.close
+    println(file + ": " + logEntries.length + " entries.")
     logEntries
   }
 
   def identifyFormat(head: String): LogFormat = FormatLoader.logFormats
-    .map(f => (f._2, new LogEntry(List(head), f._2).format.count(_._2.isDefined))).toList
-    .sortBy(_._2)(Ordering[Int].reverse).head._1
+    .map(f => (f._2, {
+      val entry = new LogEntry(List(head), f._2)
+      entry.format.size - entry.format.count(_._2.isEmpty)
+    })).toList.maxBy(_._2)._1
 }

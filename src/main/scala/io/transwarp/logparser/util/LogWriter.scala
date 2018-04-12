@@ -10,7 +10,7 @@ object LogWriter {
   def writeLogEntries(logEntries: List[LogEntry], path: String): Unit = {
     val writer = new PrintWriter(new File(path))
     logEntries.foreach(l => {
-      val delimiter = getDelimiter(l.fileName.length)
+      val delimiter = getDelimiter(l.fileName.length + 1)
       writer.write(delimiter + "\n" + l.fileName + ":\n")
       l.content.foreach(s => writer.write(s + "\n"))
     })

@@ -26,14 +26,14 @@ class FilterTest {
 
   @Test
   def exceptionFilter(): Unit = {
-    val filter = new ExceptionFilter
+    val filter = new ExceptionFilter(Nil)
     assert(filter.filter(new LogEntry(data1, FormatLoader.logFormats("es"))))
     assert(!filter.filter(new LogEntry(data3, FormatLoader.logFormats("es"))))
   }
 
   @Test
   def timeFilter(): Unit = {
-    val filter = new TimeFilter("20000101 00:00:00,000", "20500101 00:00:00,000")
+    val filter = new TimeFilter(List("20000101 00:00:00,000", "20500101 00:00:00,000"))
     assert(filter.filter(new LogEntry(data5, FormatLoader.logFormats("manager"))))
   }
 
@@ -46,7 +46,7 @@ class FilterTest {
 
   @Test
   def duplicationFilter(): Unit = {
-    val filter = new DuplicationFilter
+    val filter = new DuplicationFilter(Nil)
     assert(filter.filter(new LogEntry(data1, FormatLoader.logFormats("es"))))
     assert(!filter.filter(new LogEntry(data2, FormatLoader.logFormats("es"))))
     assert(filter.filter(new LogEntry(data3, FormatLoader.logFormats("es"))))
