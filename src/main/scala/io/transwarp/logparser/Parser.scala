@@ -1,7 +1,6 @@
 package io.transwarp.logparser
 
 import java.io._
-import java.util.Date
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
@@ -9,6 +8,7 @@ import com.fasterxml.jackson.module.scala.experimental.ScalaObjectMapper
 import io.transwarp.logparser.conf.Constant
 import io.transwarp.logparser.filter.Filter
 import io.transwarp.logparser.util.{LogCase, LogEntry, ToolUtils}
+import org.joda.time.DateTime
 
 import scala.collection.mutable
 
@@ -21,7 +21,7 @@ object Parser {
   var mergeFilters: List[Filter] = Nil
 
   def merge(files: List[File]): List[LogEntry] = files.par.map(f => FileParser.parseFile(f, cloneFilters(fileFilters)))
-    .reduce((l, r) => (l ++ r).sortBy(_.format("timestamp").asInstanceOf[Option[Date]]))
+    .reduce((l, r) => (l ++ r).sortBy(_.format("timestamp").asInstanceOf[Option[DateTime]].getOrElse(new DateTime(0)).getMillis))
 
   def cloneFilters(filters: List[Filter]): List[Filter] = {
     var newFilters: List[Filter] = List()
@@ -36,16 +36,16 @@ object Parser {
     val iterator = logEntities.iterator
     val head = iterator.next
     entities = entities :+ head
-    var lastTime: Long = head.format("timestamp").asInstanceOf[Option[Date]].fold(0L)(_.getTime)
+    var lastTime: Long = head.format("timestamp").asInstanceOf[Option[DateTime]].fold(0L)(_.getMillis)
 
     do {
       val logEntity = iterator.next
-      logEntity.format("timestamp").asInstanceOf[Option[Date]].foreach(f => {
-        if (f.getTime - lastTime > Constant.CASE_INTERVAL) {
+      logEntity.format("timestamp").asInstanceOf[Option[DateTime]].foreach(f => {
+        if (f.getMillis - lastTime > Constant.CASE_INTERVAL) {
           logCases = logCases :+ new LogCase(entities)
           entities = List()
         }
-        lastTime = f.getTime
+        lastTime = f.getMillis
       })
       entities = entities :+ logEntity
     } while (iterator.hasNext)

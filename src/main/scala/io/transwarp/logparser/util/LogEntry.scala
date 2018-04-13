@@ -1,8 +1,8 @@
 package io.transwarp.logparser.util
 
-import java.text.SimpleDateFormat
-
 import io.transwarp.logparser.conf.LogFormat
+import org.joda.time.DateTime
+import org.joda.time.format.DateTimeFormat
 
 import scala.util.Try
 
@@ -19,7 +19,7 @@ class LogEntry(records: List[String], logFormat: LogFormat) {
     logFormat.config.foreach(c => c._1 match {
       case "timestamp" => map += (c._1 -> Converter.convertDateToRegex(c._2).r.findFirstIn(head).map(f => {
         head = head.replaceAllLiterally(f, "")
-        new SimpleDateFormat(Converter.dateEscape(c._2)).parse(f)
+        DateTime.parse(f, DateTimeFormat.forPattern(Converter.dateEscape(c._2)))
       }))
       case _ => map += (c._1 -> c._2.r.findFirstIn(head).map(f => {
         head = head.replaceAllLiterally(f, "")
@@ -39,5 +39,5 @@ class LogEntry(records: List[String], logFormat: LogFormat) {
 
   val duplicationIdentifier: Option[String] = None
 
-  var fileName: String = _
+  var fileName: Option[String] = None
 }

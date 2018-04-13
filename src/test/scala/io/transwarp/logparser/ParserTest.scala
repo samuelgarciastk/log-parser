@@ -13,7 +13,7 @@ import org.junit.Test
 class ParserTest {
   val tempDirectory: Path = Files.createTempDirectory("LP-")
   tempDirectory.toFile.deleteOnExit()
-  val directory = "C:\\Users\\stk\\Downloads\\test-data\\logs\\inceptor"
+  val directory = "C:\\Users\\stk\\Downloads\\test-data\\logs\\elasticsearch"
   val logPath = "C:\\Users\\stk\\Downloads\\test-data\\final.log"
   val zipPath = "C:\\Users\\stk\\Downloads\\test-data\\logs.zip"
 

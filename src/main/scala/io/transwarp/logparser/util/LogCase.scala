@@ -12,7 +12,7 @@ class LogCase(logEntries: List[LogEntry]) {
   val component: String = ""
 
   val exception: Option[String] = content.filter(_.isException).filter(_.duplicationIdentifier.isDefined)
-    .map(f => f.fileName + ":\n" + f.content.head + "\n" + f.duplicationIdentifier.get + "\n").mkString("\n") match {
+    .map(f => f.fileName.getOrElse("File path not found") + ":\n" + f.content.head + "\n" + f.duplicationIdentifier.get + "\n").mkString("\n") match {
     case "" => None
     case s => Option(s)
   }

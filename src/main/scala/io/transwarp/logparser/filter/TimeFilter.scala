@@ -1,9 +1,8 @@
 package io.transwarp.logparser.filter
 
-import java.text.SimpleDateFormat
-import java.util.Date
-
 import io.transwarp.logparser.util.LogEntry
+import org.joda.time.DateTime
+import org.joda.time.format.DateTimeFormat
 
 /**
   * Author: stk
@@ -12,10 +11,10 @@ import io.transwarp.logparser.util.LogEntry
   * @param params [begin time, end time]
   */
 class TimeFilter(override val params: List[String]) extends Filter {
-  private val format = new SimpleDateFormat("yyyyMMdd HH:mm:ss,SSS")
+  private val format = DateTimeFormat.forPattern("yyyyMMdd HH:mm:ss,SSS")
 
-  override def filter(logEntry: LogEntry): Boolean = logEntry.format("timestamp").asInstanceOf[Option[Date]]
-    .fold(false)(f => f.compareTo(format.parse(params.head)) >= 0 && f.compareTo(format.parse(params.last)) <= 0)
+  override def filter(logEntry: LogEntry): Boolean = logEntry.format("timestamp").asInstanceOf[Option[DateTime]]
+    .fold(false)(f => f.isAfter(DateTime.parse(params.head, format)) && f.isBefore(DateTime.parse(params.last, format)))
 
   override def copy(): Filter = new TimeFilter(params)
 }

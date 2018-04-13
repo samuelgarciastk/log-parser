@@ -27,7 +27,7 @@ object FileParser {
 
     val filter = (lines: List[String]) => if (lines.nonEmpty) {
       val logEntity = new LogEntry(lines, logFormat)
-      logEntity.fileName = file.toString
+      logEntity.fileName = Some(file.toString)
       if (filters.dropWhile(_.filter(logEntity)).isEmpty) logEntries = logEntries :+ logEntity
     }
 

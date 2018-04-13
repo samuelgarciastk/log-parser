@@ -10,8 +10,8 @@ object LogWriter {
   def writeLogEntries(logEntries: List[LogEntry], path: String): Unit = {
     val writer = new PrintWriter(new File(path))
     logEntries.foreach(f => {
-      val delimiter = getDelimiter(f.fileName.length + 1)
-      writer.write(delimiter + "\n" + f.fileName + ":\n")
+      val delimiter = getDelimiter(f.fileName.map(_.length).getOrElse(19) + 1)
+      writer.write(delimiter + "\n" + f.fileName.getOrElse("File path not found") + ":\n")
       f.content.foreach(s => writer.write(s + "\n"))
     })
     writer.flush()
@@ -30,7 +30,7 @@ object LogWriter {
         writer.write(s"$delimiter\n$lint\n$delimiter\n")
         writer.write(f.exception.get + "\n")
         /*f.content.foreach(l => {
-          writer.write(l.fileName + ":\n")
+          writer.write(l.fileName.getOrElse("File path not found") + ":\n")
           l.content.foreach(s => writer.write(s + "\n"))
         })*/
       }
