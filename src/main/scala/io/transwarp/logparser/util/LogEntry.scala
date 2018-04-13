@@ -1,44 +1,30 @@
 package io.transwarp.logparser.util
 
 import java.text.SimpleDateFormat
-import java.util.Date
 
 import io.transwarp.logparser.conf.LogFormat
+
+import scala.util.Try
 
 /**
   * Author: stk
   * Date: 18/4/8
   */
 class LogEntry(records: List[String], logFormat: LogFormat) {
-  val content: List[String] = records match {
-    case null | Nil => throw new IllegalArgumentException("Invalid records.")
-    case _ => records
-  }
+  val content: List[String] = if (Option(records).getOrElse(Nil).isEmpty) throw new IllegalArgumentException("Invalid records.") else records
 
   val format: Map[String, Option[Any]] = {
     var head = content.head
     var map: Map[String, Option[Any]] = Map()
     logFormat.config.foreach(c => c._1 match {
-      case "timestamp" =>
-        val value: Option[Date] = Converter.convertDateToRegex(c._2).r.findFirstIn(head) match {
-          case Some(time) =>
-            head = head.replaceAllLiterally(time, "")
-            Option(new SimpleDateFormat(Converter.dateEscape(c._2)).parse(time))
-          case None => None
-        }
-        map += (c._1 -> value)
-      case _ =>
-        val value: Option[String] = c._2.r.findFirstIn(head) match {
-          case Some(field) =>
-            head = head.replaceAllLiterally(field, "")
-            Option(try {
-              c._2.r.replaceFirstIn(field, "$1").trim
-            } catch {
-              case _: Throwable => c._2.r.replaceFirstIn(field, "$0").trim
-            })
-          case None => None
-        }
-        map += (c._1 -> value)
+      case "timestamp" => map += (c._1 -> Converter.convertDateToRegex(c._2).r.findFirstIn(head).map(f => {
+        head = head.replaceAllLiterally(f, "")
+        new SimpleDateFormat(Converter.dateEscape(c._2)).parse(f)
+      }))
+      case _ => map += (c._1 -> c._2.r.findFirstIn(head).map(f => {
+        head = head.replaceAllLiterally(f, "")
+        Try(c._2.r.replaceFirstIn(f, "$1").trim).getOrElse(c._2.r.replaceFirstIn(f, "$0").trim)
+      }))
     })
     map += ("message" -> Option(head.replaceFirst("[^\\w]*", "").trim))
     map

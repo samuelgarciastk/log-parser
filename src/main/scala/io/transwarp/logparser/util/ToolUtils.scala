@@ -13,9 +13,9 @@ import scala.io.Source
 object ToolUtils {
   def unzip(file: String, path: Path): Unit = {
     val in = new ZipInputStream(new FileInputStream(file))
-    Stream.continually(in.getNextEntry).takeWhile(_ != null).foreach(file => {
-      if (!file.isDirectory) {
-        val outPath = path.resolve(file.getName)
+    Stream.continually(in.getNextEntry).takeWhile(_ != null).foreach(f => {
+      if (!f.isDirectory) {
+        val outPath = path.resolve(f.getName)
         val parent = outPath.getParent
         if (!parent.toFile.exists) parent.toFile.mkdirs
         val out = new FileOutputStream(outPath.toFile)

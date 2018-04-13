@@ -33,7 +33,7 @@ class FilterTest {
 
   @Test
   def timeFilter(): Unit = {
-    val filter = new TimeFilter(List("20000101 00:00:00,000", "20500101 00:00:00,000"))
+    val filter = new TimeFilter(List("20180330 20:00:00,000", "20180330 21:32:00,000"))
     assert(filter.filter(new LogEntry(data5, FormatLoader.logFormats("manager"))))
   }
 

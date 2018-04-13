@@ -19,7 +19,7 @@ class LogEntryTest {
 
   @Test
   def logEntry(): Unit = {
-    val logEntry = new LogEntry(list1, FileParser.identifyFormat(list1.head))
+    val logEntry = new LogEntry(list4, FileParser.identifyFormat(list4.head))
     logEntry.format.foreach(println)
   }
 }

@@ -20,8 +20,8 @@ object Parser {
   var fileFilters: List[Filter] = getFilters(ToolUtils.fileToString("conf.json"))
   var mergeFilters: List[Filter] = Nil
 
-  def merge(files: List[File]): List[LogEntry] = files.par.map(file => FileParser.parseFile(file, cloneFilters(fileFilters)))
-    .reduce((r1, r2) => (r1 ++ r2).sortBy(_.format("timestamp").asInstanceOf[Option[Date]]))
+  def merge(files: List[File]): List[LogEntry] = files.par.map(f => FileParser.parseFile(f, cloneFilters(fileFilters)))
+    .reduce((l, r) => (l ++ r).sortBy(_.format("timestamp").asInstanceOf[Option[Date]]))
 
   def cloneFilters(filters: List[Filter]): List[Filter] = {
     var newFilters: List[Filter] = List()
@@ -36,39 +36,32 @@ object Parser {
     val iterator = logEntities.iterator
     val head = iterator.next
     entities = entities :+ head
-
-    var lastTime: Long = head.format("timestamp").asInstanceOf[Option[Date]] match {
-      case Some(time) => time.getTime
-      case None => 0
-    }
+    var lastTime: Long = head.format("timestamp").asInstanceOf[Option[Date]].fold(0L)(_.getTime)
 
     do {
       val logEntity = iterator.next
-      logEntity.format("timestamp").asInstanceOf[Option[Date]].foreach(time => {
-        if (time.getTime - lastTime > Constant.CASE_INTERVAL) {
+      logEntity.format("timestamp").asInstanceOf[Option[Date]].foreach(f => {
+        if (f.getTime - lastTime > Constant.CASE_INTERVAL) {
           logCases = logCases :+ new LogCase(entities)
           entities = List()
         }
-        lastTime = time.getTime
+        lastTime = f.getTime
       })
       entities = entities :+ logEntity
     } while (iterator.hasNext)
     logCases
   }
 
-  def mergeFilter(logEntities: List[LogEntry]): List[LogEntry] = logEntities.filter(l => mergeFilters.dropWhile(_.filter(l)).isEmpty)
+  def mergeFilter(logEntities: List[LogEntry]): List[LogEntry] = logEntities.filter(p => mergeFilters.dropWhile(_.filter(p)).isEmpty)
 
   private def getFilters(json: String): List[Filter] = {
     val mapper = new ObjectMapper with ScalaObjectMapper
     mapper.registerModule(DefaultScalaModule)
     val config = mapper.readValue[mutable.LinkedHashMap[String, List[String]]](json)
     var filters: List[Filter] = List()
-    config.foreach(e => filters = filters :+
-      Class.forName("io.transwarp.logparser.filter." + e._1)
-        .getConstructor(classOf[List[String]]).newInstance(e._2 match {
-        case Nil => null
-        case param => param
-      }).asInstanceOf[Filter])
+    config.foreach(f => filters = filters :+
+      Class.forName("io.transwarp.logparser.filter." + f._1)
+        .getConstructor(classOf[List[String]]).newInstance(f._2).asInstanceOf[Filter])
     filters
   }
 }

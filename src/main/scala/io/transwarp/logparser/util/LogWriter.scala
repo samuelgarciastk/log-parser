@@ -9,10 +9,10 @@ import java.io.{File, PrintWriter}
 object LogWriter {
   def writeLogEntries(logEntries: List[LogEntry], path: String): Unit = {
     val writer = new PrintWriter(new File(path))
-    logEntries.foreach(l => {
-      val delimiter = getDelimiter(l.fileName.length + 1)
-      writer.write(delimiter + "\n" + l.fileName + ":\n")
-      l.content.foreach(s => writer.write(s + "\n"))
+    logEntries.foreach(f => {
+      val delimiter = getDelimiter(f.fileName.length + 1)
+      writer.write(delimiter + "\n" + f.fileName + ":\n")
+      f.content.foreach(s => writer.write(s + "\n"))
     })
     writer.flush()
     writer.close()
@@ -22,14 +22,14 @@ object LogWriter {
   def writeLogCases(logCases: List[LogCase], path: String): Unit = {
     val writer = new PrintWriter(new File(path))
     var index = 0
-    logCases.foreach(c => {
-      if (c.exception.isDefined) {
+    logCases.foreach(f => {
+      if (f.exception.isDefined) {
         index += 1
         val lint = s"|| Log Case: $index ||"
         val delimiter = getDelimiter(lint.length)
         writer.write(s"$delimiter\n$lint\n$delimiter\n")
-        writer.write(c.exception.get + "\n")
-        /*c.content.foreach(l => {
+        writer.write(f.exception.get + "\n")
+        /*f.content.foreach(l => {
           writer.write(l.fileName + ":\n")
           l.content.foreach(s => writer.write(s + "\n"))
         })*/
@@ -44,14 +44,5 @@ object LogWriter {
     var delimiter = ""
     for (_ <- 1 to length) yield delimiter += "="
     delimiter
-  }
-
-  def logEntriesToList(logEntries: List[LogEntry]): List[String] = {
-    var result: List[String] = List()
-    logEntries.foreach(l => {
-      result = result :+ l.fileName + ": "
-      l.content.foreach(s => result = result :+ s)
-    })
-    result
   }
 }

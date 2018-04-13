@@ -28,7 +28,7 @@ object FormatLoader {
     val mapper = new ObjectMapper with ScalaObjectMapper
     mapper.registerModule(DefaultScalaModule)
     val configMap = mapper.readValue[mutable.LinkedHashMap[String, mutable.LinkedHashMap[String, String]]](inputStream)
-    configMap.foreach(e => formatMap += (e._1 -> LogFormat(e._2)))
+    configMap.foreach(f => formatMap += (f._1 -> LogFormat(f._2)))
     formatMap
   }
 }
