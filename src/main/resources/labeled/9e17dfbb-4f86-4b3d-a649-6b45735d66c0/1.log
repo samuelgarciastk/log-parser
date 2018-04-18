@@ -1,0 +1,3 @@
+marking and sending shard failed due to [failed to create shard]
+java.io.IOException: failed to obtain in-memory shard lock
+at org.elasticsearch.index.IndexService.createShard(IndexService.java:381) ~[elasticsearch-5.4.1-transwarp-5.1.1.jar:5.4.1-transwarp-5.1.1]

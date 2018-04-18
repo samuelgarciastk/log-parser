@@ -26,9 +26,9 @@ object FileParser {
     var lines: List[String] = List(line)
 
     val filter = (lines: List[String]) => if (lines.nonEmpty) {
-      val logEntity = new LogEntry(lines, logFormat)
-      logEntity.fileName = Some(file.toString)
-      if (filters.dropWhile(_.filter(logEntity)).isEmpty) logEntries = logEntries :+ logEntity
+      val logEntry = new LogEntry(lines, logFormat)
+      logEntry.fileName = Some(file.toString)
+      if (filters.dropWhile(_.filter(logEntry)).isEmpty) logEntries = logEntries :+ logEntry
     }
 
     val isBeginLine = (line: String) => logFormat.config.head match {
@@ -51,8 +51,9 @@ object FileParser {
   }
 
   def identifyFormat(head: String): LogFormat = FormatLoader.logFormats
-    .map(f => (f._2, {
-      val entry = new LogEntry(List(head), f._2)
+    .map { case (_, format) => (format, {
+      val entry = new LogEntry(List(head), format)
       entry.format.size - entry.format.count(_._2.isEmpty)
-    })).toList.maxBy(_._2)._1
+    })
+    }.toList.maxBy(_._2)._1
 }

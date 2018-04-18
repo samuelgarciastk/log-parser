@@ -9,10 +9,7 @@ package io.transwarp.logparser.util
 class LogCase(logEntries: List[LogEntry]) {
   val content: List[LogEntry] = if (Option(logEntries).getOrElse(Nil).isEmpty) throw new IllegalArgumentException("Invalid entries.") else logEntries
 
-  val component: String = ""
-
-  val exception: Option[String] = content.filter(_.isException).filter(_.duplicationIdentifier.isDefined)
-    .map(f => f.fileName.getOrElse("File path not found") + ":\n" + f.content.head + "\n" + f.duplicationIdentifier.get + "\n").mkString("\n") match {
+  val keyInfo: Option[String] = content.filter(_.keyInfo.isDefined).map(_.keyInfo.get).reduce(_ + "\n" + _) match {
     case "" => None
     case s => Option(s)
   }

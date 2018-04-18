@@ -13,9 +13,11 @@ dependencies {
     compile group: 'org.scala-lang', name: 'scala-library', version: '2.10.7'
     compile group: 'com.fasterxml.jackson.module', name: 'jackson-module-scala_2.10', version: '2.9.5'
     compile group: 'org.joda', name: 'joda-convert', version: '2.0.1'
-    compile group: 'edu.stanford.nlp', name: 'stanford-corenlp', version: '3.9.1'
-    compile group: 'edu.stanford.nlp', name: 'stanford-corenlp', version: '3.9.1', classifier: "models"
-    compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.11.0'
     compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
+    compile group: 'org.datavec', name: 'datavec-api', version: '1.0.0-alpha'
+    compile group: 'org.deeplearning4j', name: 'deeplearning4j-core', version: '1.0.0-alpha'
+    compile group: 'org.deeplearning4j', name: 'deeplearning4j-nlp', version: '1.0.0-alpha'
+    compile group: 'org.nd4j', name: 'nd4j-common', version: '1.0.0-alpha'
+    compile group: 'org.nd4j', name: 'nd4j-native-platform', version: '1.0.0-alpha'
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }

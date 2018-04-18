@@ -12,6 +12,12 @@ object LogWriter {
     logEntries.foreach(f => {
       val delimiter = getDelimiter(f.fileName.map(_.length).getOrElse(19) + 1)
       writer.write(delimiter + "\n" + f.fileName.getOrElse("File path not found") + ":\n")
+      f.format.foreach { case (field, value) => writer.write("> " + field + ": " + value.getOrElse("NULL").toString + "\n") }
+      writer.write("> Duplication Identifier: \n")
+      writer.write(f.duplicationIdentifier.getOrElse("NULL") + "\n")
+      writer.write("> Key Information: \n")
+      writer.write(f.keyInfo.getOrElse("NULL") + "\n")
+      writer.write("> Content: \n")
       f.content.foreach(s => writer.write(s + "\n"))
     })
     writer.flush()
@@ -23,16 +29,12 @@ object LogWriter {
     val writer = new PrintWriter(new File(path))
     var index = 0
     logCases.foreach(f => {
-      if (f.exception.isDefined) {
+      if (f.keyInfo.isDefined) {
         index += 1
         val lint = s"|| Log Case: $index ||"
         val delimiter = getDelimiter(lint.length)
         writer.write(s"$delimiter\n$lint\n$delimiter\n")
-        writer.write(f.exception.get + "\n")
-        /*f.content.foreach(l => {
-          writer.write(l.fileName.getOrElse("File path not found") + ":\n")
-          l.content.foreach(s => writer.write(s + "\n"))
-        })*/
+        writer.write(f.keyInfo.get + "\n")
       }
     })
     writer.flush()

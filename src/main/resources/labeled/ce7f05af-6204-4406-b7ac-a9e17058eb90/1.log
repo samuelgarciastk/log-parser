@@ -1,0 +1,4 @@
+Spark task execution is failed.
+org.apache.spark.SparkException: Job aborted due to stage failure: Task 2 in stage 300289.0 failed 4 times, most recent failure: Lost task 2.3 in stage 300289.0 (TID 6928674, tdh-app-156):
+java.lang.ArrayIndexOutOfBoundsException:
+at io.transwarp.inceptor.util.SplitableJavaHeapValueBuffer.readBytesWritable(ValueBuffer.scala:149) 

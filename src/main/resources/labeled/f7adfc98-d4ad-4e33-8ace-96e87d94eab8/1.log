@@ -1,0 +1,1 @@
+EXECUTION FAILED: Task EXEC PLSQL error HiveException: [Error 20305] EXECUTION FAILED: Task MAPRED-SPARK error SparkException: [Error 1] Job aborted due to stage failure: Task 97 in stage 204971.0 failed 4times, most recent failure: Lost task 97.3 in stage 204971.0 (TID 6494930, kanban20): org.apache.spark.SparkException: Bucket size is too large (>2G) after compress.	

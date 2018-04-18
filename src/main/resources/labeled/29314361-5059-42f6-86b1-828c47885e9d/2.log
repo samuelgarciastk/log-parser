@@ -1,0 +1,1 @@
+org.apache.hadoop.ipc.RemoteException(java.io.IOException): File /test222.txt could only be replicated to 0 nodes instead of minReplication (=1). There are 3 datanode(s) running and 0 node(s) are excluded in this operation.

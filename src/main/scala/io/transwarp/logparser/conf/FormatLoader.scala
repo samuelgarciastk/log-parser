@@ -1,7 +1,5 @@
 package io.transwarp.logparser.conf
 
-import java.io.InputStream
-
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.fasterxml.jackson.module.scala.experimental.ScalaObjectMapper
@@ -15,20 +13,20 @@ import scala.collection.mutable
 case class LogFormat(config: mutable.LinkedHashMap[String, String])
 
 object FormatLoader {
-  val logFormats: mutable.LinkedHashMap[String, LogFormat] = loadFormat(this.getClass.getClassLoader.getResourceAsStream("format.json"))
+  val logFormats: Map[String, LogFormat] = loadFormat()
 
   /**
-    * Load the configuration file for log format.
+    * Load the default configuration file for log format.
     *
-    * @param inputStream InputStream of configuration file
     * @return LogFormat
     */
-  def loadFormat(inputStream: InputStream): mutable.LinkedHashMap[String, LogFormat] = {
-    val formatMap = new mutable.LinkedHashMap[String, LogFormat]
+  def loadFormat(): Map[String, LogFormat] = {
+    val inputStream = this.getClass.getClassLoader.getResourceAsStream("format.json")
+    var formatMap: Map[String, LogFormat] = Map()
     val mapper = new ObjectMapper with ScalaObjectMapper
     mapper.registerModule(DefaultScalaModule)
-    val configMap = mapper.readValue[mutable.LinkedHashMap[String, mutable.LinkedHashMap[String, String]]](inputStream)
-    configMap.foreach(f => formatMap += (f._1 -> LogFormat(f._2)))
+    val configMap = mapper.readValue[Map[String, mutable.LinkedHashMap[String, String]]](inputStream)
+    configMap.foreach { case (name, format) => formatMap += (name -> LogFormat(format)) }
     formatMap
   }
 }
